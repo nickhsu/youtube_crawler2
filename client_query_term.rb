@@ -5,6 +5,7 @@ require 'json'
 require 'logger'
 require 'cgi'
 require 'mongo'
+require 'tempfile'
 
 #parsing command line
 
@@ -30,7 +31,7 @@ def get_search_video_url(args)
 	url = "http://gdata.youtube.com/feeds/api/videos?"
 	args.each_pair { |k, v| url += "&#{k.to_s}=#{CGI::escape(v.to_s)}" }
 
-		return url
+	return url
 end
 
 def parse_json(data)
@@ -78,10 +79,11 @@ end
 logger = Logger.new(STDOUT)
 logger.level = Logger::DEBUG
 threads = []
-entry_file = File.open(config["entryFilePath"], "a+")
 
 config["numThread"].times do
 	threads << Thread.new do
+		entry_file = Tempfile.new('entries', '/tmp')
+		total_size = 0
 		while true	
 			term = db["terms"].find_one({"isQueried" => false}, {:skip => Random.rand(10000), :fields => "term"})
 			break if term.nil?
@@ -94,13 +96,26 @@ config["numThread"].times do
 				entry_file.puts e.to_json
 			end
 
-			logger.info "query key = #{term['term']}, total_results = #{entries.size}"
+			total_size += entries.size
+			logger.info "query key = #{term['term']}, results_size = #{entries.size}, total_size = #{total_size}"
 
 			if need_sleep
 				logger.info "sleep..."
 				sleep(120)
 			else
 				db['terms'].update({"_id" => term["_id"]}, {"$set" => {"isQueried" => true}}).inspect
+			end
+
+			# zip file when over 1G
+			if total_size > 300000
+				entry_file.close
+				entry_file_zipped_path = entry_file.path + ".gz"
+				logger.info "zip file, path = #{entry_file.path}"
+				system "gzip #{entry_file.path}"
+				system "mv #{entry_file_zipped_path} #{config["entryFileDir"]}"
+
+				entry_file = Tempfile.new('entries', '/tmp')
+				total_size = 0
 			end
 		end
 	end
