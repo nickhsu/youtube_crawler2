@@ -102,7 +102,7 @@ config["numThread"].times do
 				logger.info "sleep..."
 				sleep(120)
 			else
-				#db['terms'].update({"term" => key}, {"$set" => {"isQueried" => true}})
+				db['terms'].update({"_id" => term["_id"]}, {"$set" => {"isQueried" => true}}).inspect
 			end
 		end
 	end
