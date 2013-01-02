@@ -40,7 +40,6 @@ def parse_json(data)
 end
 
 def	query_by_term(term) 
-	hydra = Typhoeus::Hydra.new
 	entries = []
 	need_sleep = false
 
@@ -67,9 +66,8 @@ def	query_by_term(term)
 					entries += json['feed']['entry'] if json['feed']['entry']
 				end
 			end
-			hydra.queue req
+			req.run
 		end
-		hydra.run
 	end
 
 	return need_sleep, entries
