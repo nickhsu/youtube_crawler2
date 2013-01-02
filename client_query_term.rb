@@ -46,8 +46,15 @@ def	query_by_term(term)
 
 	url = get_search_video_url("q" => term, "max-results" => 50, "alt" => "json")
 	data = Typhoeus::Request.new(url, :method => :get).run.body
-	json = parse_json(data)
-	entries += json['feed']['entry'] if json['feed']['entry']
+	
+	if data.index("too_many_recent_calls")
+		return true, []
+	elsif data.index("Internal Error")
+		return false, []
+	else
+		json = parse_json(data)
+		entries += json['feed']['entry'] if json['feed']['entry']
+	end
 
 	num_entries = json["feed"]["openSearch$totalResults"]["_t"]
 	num_entries = 1000 if num_entries > 1000
@@ -106,8 +113,8 @@ config["numThread"].times do
 				db['terms'].update({"_id" => term["_id"]}, {"$set" => {"isQueried" => true}}).inspect
 			end
 
-			# zip file when over 1G
-			if total_size > 300000
+			# zip file when over 100M
+			if total_size > 30000
 				entry_file.close
 				entry_file_zipped_path = entry_file.path + ".gz"
 				logger.info "zip file, path = #{entry_file.path}"
