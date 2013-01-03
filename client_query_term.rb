@@ -113,8 +113,8 @@ config["numThread"].times do
 				db['terms'].update({"_id" => term["_id"]}, {"$set" => {"isQueried" => true}}).inspect
 			end
 
-			# zip file when over 100M
-			if total_size > 30000
+			# zip file when over 500M
+			if total_size > 150000
 				entry_file.close
 				entry_file_zipped_path = entry_file.path + ".gz"
 				logger.info "zip file, path = #{entry_file.path}"
