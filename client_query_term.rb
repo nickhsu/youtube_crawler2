@@ -92,7 +92,7 @@ config["numThread"].times do
 		entry_file = Tempfile.new('entries', '/tmp')
 		total_size = 0
 		while true	
-			term = db["terms"].find_one({"isQueried" => false}, {:skip => Random.rand(10000), :fields => "term"})
+			term = db["terms"].find_one({"isQueried" => false}, {:skip => Random.rand(100), :fields => "term"})
 			break if term.nil?
 
 			need_sleep, entries = query_by_term(term["term"])
