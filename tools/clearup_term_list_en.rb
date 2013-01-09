@@ -4,5 +4,5 @@ drop_patten = /[\/&$+!"'_.():,-]/
 
 STDIN.each_line do |line|
 	next if line.size > 20
-	line.gsub!(drop_patten, " ")
+	puts line.gsub!(drop_patten, " ")
 end
