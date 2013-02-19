@@ -66,9 +66,8 @@ def	query_by_term(term)
 			req = Typhoeus::Request.new(url, :method => :get)
 			req.on_complete do |res|
 				data = res.body
-				if data.index("too_many_recent_calls")
+				if data.index("too_many_recent_calls") or data.index("Service Unavailable") or data.index("Internal Error")
 					need_sleep = true
-				elsif data.index("Internal Error")
 				else
 					json = parse_json(data)
 					entries += json['feed']['entry'] if json['feed']['entry']
