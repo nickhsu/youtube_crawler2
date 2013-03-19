@@ -35,12 +35,12 @@ HashTable *hash_table_new(size_t size) {
 
 size_t hash_table_hash_function(HashTable *t, YoutubeID *youtube_id) {
 	size_t i = 0,
-		   hash_value;
+		   hash_value = 0;
 
 	for (i = 0; i < SIZE_YOUTUBE_ID; i++) {
-		hash_value += (hash_value << 5 + youtube_id->id[i]);
+		hash_value = (hash_value + youtube_id->id[i]) << 5;
 	}
-
+	
 	return hash_value % t->size;
 }
 
@@ -48,6 +48,7 @@ void hash_table_insert(HashTable *t, YoutubeID *youtube_id) {
 	size_t hash_value = hash_table_hash_function(t, youtube_id);
 	YoutubeID *p;
 	
+	printf("hash_val = %zd\n", hash_value);
 	for (p = &t->data[hash_value]; p->id[0] != '\0'; p++)
 		;
 	memcpy(p, youtube_id, sizeof(YoutubeID));
@@ -76,6 +77,32 @@ bool hash_table_find(HashTable *t, YoutubeID *youtube_id) {
 
 bool hash_table_is_fulled(HashTable *t) {
 	return t->count >= t->size;
+}
+
+void hash_table_print_stat(HashTable *t) {
+	int i,
+		cluster_counter = 0;
+
+	/*
+	cluster_counter = 0;
+	for (i = 0; i < t->size; i++) {
+		if (t->data[i].id[0] != '\0') {
+			cluster_counter++;
+		} else {
+			if (cluster_counter != 0) {
+				printf("cluster_counter = %d\n", cluster_counter);
+				cluster_counter = 0;
+			}
+		}
+	}
+	*/
+	for (i = 0; i < t->size; i++) {
+		if (t->data[i].id[0] != '\0') {
+			printf("%s\n", t->data[i].id);
+		} else {
+			printf("--\n");
+		}
+	}
 }
 
 void hash_table_test() {
@@ -201,8 +228,10 @@ int main(int argc, char *argv[]) {
 
 	fprintf(stderr, "INFO: hash_table->size  = %zd\n", hash_table->size);
 	fprintf(stderr, "INFO: hash_table->count = %zd\n", hash_table->count);
+	hash_table_print_stat(hash_table);
 
 	/* filte input */
+	/*
 	while (fgets(buffer, BUFSIZ, stdin) != NULL) {
 		if (extract_video_id(buffer, (char*) &youtube_id)) {
 			if (!hash_table_find(hash_table, &youtube_id)) {
@@ -218,7 +247,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
-
+	*/
 	fclose(fp);
 	hash_table_free(hash_table);
 
