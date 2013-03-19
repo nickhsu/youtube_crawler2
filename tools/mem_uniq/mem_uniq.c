@@ -237,7 +237,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		num_line_readed++;
-		if (num_line_readed % 100000) {
+		if (num_line_readed % 100000 == 0) {
 			fprintf(stderr, "INFO: num_line_readed = %d\n", num_line_readed);
 		}
 	}
