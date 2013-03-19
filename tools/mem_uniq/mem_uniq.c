@@ -192,6 +192,7 @@ int main(int argc, char *argv[]) {
 	char buffer[BUFSIZ];
 	HashTable *hash_table = NULL;
 	YoutubeID youtube_id;
+	int num_line_readed = 0;
 
 	/* parse option */
 	option = option_new(argc, argv);
@@ -233,6 +234,11 @@ int main(int argc, char *argv[]) {
 					exit(0);
 				}
 			}
+		}
+
+		num_line_readed++;
+		if (num_line_readed % 100000) {
+			fprintf(stderr, "INFO: num_line_readed = %d\n", num_line_readed);
 		}
 	}
 	
