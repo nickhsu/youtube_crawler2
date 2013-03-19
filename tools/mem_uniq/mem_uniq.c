@@ -34,9 +34,10 @@ HashTable *hash_table_new(size_t size) {
 }
 
 size_t hash_table_hash_function(HashTable *t, YoutubeID *youtube_id) {
-	size_t hash_value = 0;
+	size_t i = 0,
+		   hash_value;
 
-	for (size_t i = 0; i < SIZE_YOUTUBE_ID; i++) {
+	for (i = 0; i < SIZE_YOUTUBE_ID; i++) {
 		hash_value += (hash_value << 5 + youtube_id->id[i]);
 	}
 
