@@ -192,7 +192,8 @@ int main(int argc, char *argv[]) {
 	char buffer[BUFSIZ];
 	HashTable *hash_table = NULL;
 	YoutubeID youtube_id;
-	int num_line_readed = 0;
+	int num_record_readed = 0,
+		num_record_added = 0;
 
 	/* parse option */
 	option = option_new(argc, argv);
@@ -227,7 +228,7 @@ int main(int argc, char *argv[]) {
 				fputs(buffer, stdout);
 				hash_table_insert(hash_table, &youtube_id);
 				fprintf(fp, "%s\n", youtube_id.id);
-
+				num_record_added++;
 				if (hash_table_is_fulled(hash_table)) {
 					fprintf(stderr, "ERROR: the hash table is full!\n");
 					fprintf(stderr, "hash table size: %zd\n", hash_table->size);
@@ -236,11 +237,12 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		num_line_readed++;
-		if (num_line_readed % 100000 == 0) {
-			fprintf(stderr, "INFO: num_line_readed = %d\n", num_line_readed);
-		}
+		num_record_readed++;
 	}
+	fprintf(stderr, "INFO: num_record_readed = %d\n", num_record_readed);
+	fprintf(stderr, "INFO: num_record_added  = %d\n", num_record_added);
+
+	
 	
 	fclose(fp);
 	hash_table_free(hash_table);
