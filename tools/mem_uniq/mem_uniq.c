@@ -63,8 +63,9 @@ void hash_table_free(HashTable *t) {
 
 bool hash_table_find(HashTable *t, YoutubeID *youtube_id) {
 	size_t hash_value = hash_table_hash_function(t, youtube_id);
-	
-	for (YoutubeID *p = &t->data[hash_value]; p->id[0] != '\0'; p++) {
+	YoutubeID *p;
+
+	for (p = &t->data[hash_value]; p->id[0] != '\0'; p++) {
 		if (memcmp(p, youtube_id, sizeof(YoutubeID)) == 0) {
 			return true;
 		}
